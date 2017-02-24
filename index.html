@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        #outputGrid .col-sm-1 {
+            border: 1px solid gray;
+            min-height: 3em;
+            text-align: center;
+            word-wrap: break-word;
+        }
+    </style>
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+
+    <div class="row">
+        <div class="form-group col-sm-12">
+            <div class="col-sm-2">
+                <label for="instanceInput">Instance Name:</label>
+            </div>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="instanceInput">
+            </div>
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-success" id="instanceNewBtn">Default</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-sm-12">
+            <div class="col-sm-2">
+                <label for="evidenceInput">Evidence Name:</label>
+            </div>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="evidenceInput">
+            </div>
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-success" id="evidenceNewBtn">Default</button>
+            </div>
+        </div>
+    </div>
+    <div id="outputGrid">
+    </div>
+</div>
+
+<script>
+    var instances;
+    var evidences;
+
+    $(document).ready(function () {
+        instances = ['0'];
+        evidences = ['0'];
+
+        $('#instanceNewBtn').click(function () {
+            var instanceInput = $('#instanceInput');
+            pushElement(instances, instanceInput);
+        });
+
+        $('#evidenceNewBtn').click(function () {
+            var evidenceInput = $('#evidenceInput');
+            pushElement(evidences, evidenceInput);
+        });
+    });
+
+    function pushElement(array, element) {
+        element.val(element.val().toLowerCase());
+        if (array.indexOf(element.val()) != -1) {
+            alert("Element <" + element.val() + "> already exists")
+        } else {
+            if (element.val() != "") {
+                array.push(element.val());
+                element.val('');
+            }
+        }
+        drawTable();
+    }
+
+    function drawTable() {
+        var outputGrid = $('#outputGrid');
+        outputGrid.html('');
+
+        $.each(evidences, function (i, evidence) {
+            var rowId;
+            if (i == 0) {
+                rowId = "instancesRow";
+            } else {
+                rowId = "rowIndex-".concat((i - 1).toString());
+            }
+            var $row = $('<div>', {id: rowId, "class": "row"});
+            outputGrid.append($row);
+            $.each(instances, function (j, instance) {
+                var row = $('#' + rowId);
+                var $div;
+                if (i == 0) {
+                    if (j == 0) {
+                        $div = $('<div>', {"class": "col-sm-1 reset", html: "Instance / Evidence"});
+                    } else {
+                        $div = $('<div>', {"class": "col-sm-1", html: instance});
+                    }
+                } else if (j == 0) {
+                    $div = $('<div>', {"class": "col-sm-1", html: evidence});
+                }
+                if ($div != null) {
+                    row.append($div);
+                }
+            });
+        });
+
+    }
+</script>
+</body>
+</html>
