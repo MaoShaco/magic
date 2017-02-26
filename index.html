@@ -4,13 +4,19 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <style>
         #outputGrid .col-sm-1 {
-            border: 1px solid gray;
-            min-height: 3em;
-            text-align: center;
-            word-wrap: break-word;
+            padding: 0;
         }
+
+        #outputGrid .col-sm-1 input {
+            width: 100%;
+            height: 3em;
+            text-align: center;
+        }
+
     </style>
 
     <meta charset="UTF-8">
@@ -48,15 +54,29 @@
     </div>
     <div id="outputGrid">
     </div>
+    <div id="controls">
+        <button type="button" class="btn btn-success" id=startBtn">Lock Matrix&Next</button>
+    </div>
+    <div id="dialog-confirm" style="display: none" title="Determine instance">
+        <p>Does instance has
+            <b></b>
+        </p>
+    </div>
 </div>
 
 <script>
     var instances;
     var evidences;
+    var inputMatrix;
+
+    var excludedEvidences;
+    var excludedInstances;
 
     $(document).ready(function () {
-        instances = ['0'];
-        evidences = ['0'];
+        instances = ["I / E"];
+        evidences = ["I / E"];
+        excludedEvidences = [];
+        excludedInstances = [];
 
         $('#instanceNewBtn').click(function () {
             var instanceInput = $('#instanceInput');
@@ -67,7 +87,83 @@
             var evidenceInput = $('#evidenceInput');
             pushElement(evidences, evidenceInput);
         });
+
+        $('#controls').find('button').click(function () {
+            initColor();
+        });
     });
+
+    function showDialog(minRow) {
+        colorRow(minRow, 'green');
+
+        var dialog = $('#dialog-confirm');
+        dialog.find('p b').html(evidences[minRow + 1]);
+
+        dialog.dialog({
+            resizable: false,
+            height: "auto",
+            width: 400,
+            modal: true,
+            buttons: {
+                "Yes": function () {
+                    $(this).dialog("close");
+                    excludeInstances(minRow, true);
+                },
+                "No": function () {
+                    $(this).dialog("close");
+                    excludeInstances(minRow, false);
+                }
+            }
+        });
+    }
+
+    function excludeInstances(rowIndex, evidenceExists) {
+        excludedEvidences.push(rowIndex);
+        $.each(inputMatrix[rowIndex], function (i, val) {
+            if ((evidenceExists && val == 0) || (!evidenceExists && val == 1)) {
+                excludedInstances.push(i);
+            }
+        });
+
+        $.each(excludedInstances, function (i, val) {
+            $('.column-' + val + ' input:not(:disabled)').css('background-color', 'lightcoral');
+        });
+        setTimeout(spliceMatrix, 10000);
+    }
+
+    function spliceMatrix() {
+        debugger;
+        $.each(inputMatrix, function (i, row) {
+            var deleted = 0;
+            $.each(excludedInstances, function (j, val) {
+                row.splice(val - deleted, 1);
+                deleted++;
+            })
+        });
+        debugger;
+        var deleted = -1;
+        $.each(excludedInstances, function (j, val) {
+            instances.splice(val - deleted, 1);
+            deleted++;
+        });
+        excludedInstances = [];
+        debugger;
+
+        deleted = 0;
+        $.each(excludedEvidences, function (i, evidence) {
+            inputMatrix.splice(evidence - deleted, 1);
+            deleted++;
+        });
+        debugger;
+        deleted = -1;
+        $.each(excludedEvidences, function (i, val) {
+            evidences.splice(val - deleted, 1);
+            deleted++;
+        });
+        excludedEvidences = [];
+
+        drawTable(inputMatrix);
+    }
 
     function pushElement(array, element) {
         element.val(element.val().toLowerCase());
@@ -79,40 +175,100 @@
                 element.val('');
             }
         }
-        drawTable();
+
+        inputMatrix = createArray(evidences.length - 1, instances.length - 1);
+        $.each(inputMatrix, function (i, row) {
+            $.each(row, function (j) {
+                inputMatrix[i][j] = Math.floor(Math.random() * 2);
+            })
+        });
+
+        drawTable(inputMatrix);
     }
 
-    function drawTable() {
+    function createArray(length) {
+        var arr = new Array(length || 0),
+            i = length;
+
+        if (arguments.length > 1) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            while (i--) arr[length - 1 - i] = createArray.apply(this, args);
+        }
+
+        return arr;
+    }
+
+    function rowSum(row) {
+        return row.reduce(function (a, b) {
+            return a + b;
+        });
+    }
+
+    function initColor() {
+        excludedEvidences = [];
+        $.each(inputMatrix, function (i, val) {
+            if (rowSum(val) == 0) {
+                excludedEvidences.push(i);
+            }
+        });
+        colorRowsAndFindMin();
+    }
+
+    function colorRowsAndFindMin() {
+        var min = inputMatrix.length;
+        var minRow = -1;
+
+        $.each(inputMatrix, function (i, val) {
+            colorRow(i, 'white');
+
+            if (excludedEvidences.indexOf(i) == -1) {
+                var minSum = rowSum(val);
+                if (minSum < min) {
+                    min = minSum;
+                    minRow = i;
+                }
+            } else {
+                colorRow(i, 'lightcoral');
+
+            }
+        });
+
+        showDialog(minRow);
+
+    }
+
+    function colorRow(rowIndex, color) {
+        $('#rowIndex-' + rowIndex + ' input:not(:disabled)').css('background-color', color)
+    }
+
+    function drawTable(inputMatrix) {
         var outputGrid = $('#outputGrid');
         outputGrid.html('');
 
         $.each(evidences, function (i, evidence) {
-            var rowId;
-            if (i == 0) {
-                rowId = "instancesRow";
-            } else {
-                rowId = "rowIndex-".concat((i - 1).toString());
-            }
+            var rowId = "rowIndex-".concat((i - 1).toString());
             var $row = $('<div>', {id: rowId, "class": "row"});
             outputGrid.append($row);
             $.each(instances, function (j, instance) {
                 var row = $('#' + rowId);
-                var $div;
-                if (i == 0) {
-                    if (j == 0) {
-                        $div = $('<div>', {"class": "col-sm-1 reset", html: "Instance / Evidence"});
-                    } else {
-                        $div = $('<div>', {"class": "col-sm-1", html: instance});
-                    }
-                } else if (j == 0) {
-                    $div = $('<div>', {"class": "col-sm-1", html: evidence});
+                var $div = $('<div>', {"class": "col-sm-1 column-" + (j - 1)});
+                var $input = $('<input>', {
+                    value: i == 0 ? instance :
+                        (j == 0 ? evidence : inputMatrix[i - 1][j - 1])
+                });
+                if (i == 0 || j == 0) {
+                    $input.prop('disabled', true);
+                } else {
+                    $input.on("change", function () {
+                        inputMatrix[i - 1][j - 1] = parseInt($(this).val());
+                    });
                 }
-                if ($div != null) {
+                if ($input.val() != "") {
+                    $div.append($input);
                     row.append($div);
                 }
             });
         });
-
     }
 </script>
 </body>
