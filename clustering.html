@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clustering</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="script/jquery.flot.js" type="text/javascript" charset="utf-8"></script>
+    <script src="script/k-means.js" type="text/javascript" charset="utf-8"></script>
+    <script src="script/forel.js" type="text/javascript" charset="utf-8"></script>
+    <script src="script/script.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav">
+            <li>
+                <a href="index.html">Exp</a>
+            </li>
+            <li class="active">
+                <a href="clustering.html">Cluster</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container-fluid">
+
+    <div class="col-sm-2">
+            <div class="form-group">
+                <div>
+                    <label for="randominp">Enter amount of points:</label>
+                </div>
+                <div>
+                    <input type="text" class="form-control" id="randominp">
+                </div>
+                <div>
+                    <button type="button" class="btn btn-success" id="randombut">Generate</button>
+                </div>
+            </div>
+        <div id="disp_data">
+            <pre id="intext"></pre>
+        </div>
+        <div class="form-group">
+            <div>
+                <label for="input-num-clas">Enter amount of clusters:</label>
+            </div>
+            <div>
+                <input type="text" class="form-control" id="input-num-clas">
+            </div>
+            <div>
+                <button type="button" class="btn btn-success" id="means">kMeans</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div>
+                <label for="inputR">Enter amount of clusters:</label>
+            </div>
+            <div>
+                <input type="text" class="form-control" id="inputR">
+            </div>
+            <div>
+                <button type="button" class="btn btn-success" id="forel">kMeans</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div id="graf" class='flot-tick-label'>
+        </div>
+    </div>
+</div>
+</body>
+</html>

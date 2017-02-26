@@ -1,0 +1,15 @@
+#outputGrid .col-sm-1 {
+    padding: 0;
+}
+
+#outputGrid .col-sm-1 input {
+    width: 100%;
+    height: 3em;
+    text-align: center;
+}
+
+body {
+    background: url(b1.png) no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+}
