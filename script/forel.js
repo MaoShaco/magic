@@ -3,9 +3,9 @@ function forel(mas, R) {
     var k = 0;
     var j;
     var mas1 = [];
-    var clases = [];
-    var centors = [];
-    var sosedi = [];
+    var clusters = [];
+    var centers = [];
+    var nears = [];
     var temp = [];
     for (i = 0; i < mas.length; i++) {
         mas1[i] = mas[i];
@@ -25,16 +25,16 @@ function forel(mas, R) {
         }
 
 
-        sosedi = getNext(mas1, current_object, R);
+        nears = getNext(mas1, current_object, R);
 
-        clases.push(sosedi);
+        clusters.push(nears);
 
 
-        centors.push(center_object);
+        centers.push(center_object);
 
         mas1 = deleteObjects(mas1, neighbour_objects);
     }
-    plotgraf(clases, centors, temp);
+    plotgraf(clusters, centers, temp);
 }
 function isClusterNotDone(mas1) {
     return mas1 != [];
