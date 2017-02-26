@@ -151,7 +151,7 @@ function getD(mas, clas, centor) {
     for (var i = 0; i < mas.length; i++) {
         a = [100, 0];
         for (var j = 0; j < clas; j++) {
-            temp = Math.min(Math.abs((mas[i][0] - centor[j][0])), Math.abs((mas[i][1] - centor[j][1])));
+            temp = Math.sqrt(Math.pow((mas[i][0]-centor[j][0]),2)+Math.pow((mas[i][1]-centor[j][1]),2));
             if (temp < a[0]) {
                 a[0] = temp;
                 a[1] = j;

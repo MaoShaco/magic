@@ -54,7 +54,7 @@ function getNext(mas1, object, R) {
     var temp = [];
     var d;
     for (i = 0; i < mas1.length; i++) {
-        d = Math.min(Math.abs(mas1[i][0] - object[0]), Math.abs(mas1[i][1] - object[1]));
+        d = Math.sqrt(Math.pow((mas1[i][0]-object[0]),2)+Math.pow((mas1[i][1]-object[1]),2));
         if (d <= R) {
             temp.push(mas1[i]);
         }
