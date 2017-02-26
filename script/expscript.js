@@ -27,6 +27,10 @@ $(document).ready(function () {
 });
 
 function showDialog(minRow) {
+    if (minRow == -1) {
+        stop(true);
+        return;
+    }
     colorRow(minRow, 'green');
 
     var dialog = $('#dialog-confirm');
@@ -65,7 +69,6 @@ function excludeInstances(rowIndex, evidenceExists) {
 }
 
 function spliceMatrix() {
-    debugger;
     $.each(inputMatrix, function (i, row) {
         var deleted = 0;
         $.each(excludedInstances, function (j, val) {
@@ -73,21 +76,18 @@ function spliceMatrix() {
             deleted++;
         })
     });
-    debugger;
     var deleted = -1;
     $.each(excludedInstances, function (j, val) {
         instances.splice(val - deleted, 1);
         deleted++;
     });
     excludedInstances = [];
-    debugger;
 
     deleted = 0;
     $.each(excludedEvidences, function (i, evidence) {
         inputMatrix.splice(evidence - deleted, 1);
         deleted++;
     });
-    debugger;
     deleted = -1;
     $.each(excludedEvidences, function (i, val) {
         evidences.splice(val - deleted, 1);
@@ -96,6 +96,18 @@ function spliceMatrix() {
     excludedEvidences = [];
 
     drawTable(inputMatrix);
+    stop();
+}
+
+function stop(stop) {
+    if (instances.length == 2) {
+        alert("Instance is " + instances[1]);
+        $('#controls').find('button').hide();
+    } else if (instances.length == 1 || evidences.length == 1 || stop) {
+        alert("UNDEFINED INSTANCE");
+        $('#controls').find('button').hide();
+        $('#outputGrid').hide();
+    }
 }
 
 function pushElement(array, element) {
@@ -148,7 +160,7 @@ function initColor() {
 }
 
 function colorRowsAndFindMin() {
-    var min = inputMatrix.length;
+    var min = instances.length - 1;
     var minRow = -1;
 
     $.each(inputMatrix, function (i, val) {
@@ -186,6 +198,7 @@ function drawTable(inputMatrix) {
             var row = $('#' + rowId);
             var $div = $('<div>', {"class": "col-sm-1 column-" + (j - 1)});
             var $input = $('<input>', {
+                "class": "form-control",
                 value: i == 0 ? instance :
                     (j == 0 ? evidence : inputMatrix[i - 1][j - 1])
             });
